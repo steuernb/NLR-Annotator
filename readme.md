@@ -31,7 +31,7 @@ Make sure you have the Java Runtime Environments 1.6 or higher. Download from ht
 
 
 ## Installation
-Make sure MEME suite and JRE are installed. Download three jar files (ChopSequence.jar, NLR-Parser.jar and NLR-Annotator.jar) as well as the motif definition file (meme.xml) from the release. Done.
+Make sure MEME suite and JRE are installed. Download three jar files (ChopSequence.jar, NLR-Parser.jar and NLR-Annotator.jar) as well as the motif definition file (meme.xml) from the [release](https://github.com/steuernb/NLR-Annotator/releases). Done.
 
 
 ## Running NLR-Annotator pipeline
@@ -74,7 +74,7 @@ java -jar NLR-Parser.jar -t <number of threads> -y <path/to/meme/bin/mast> -x <p
 -c | The output file that will be created. This is in xml format and will be the input for NLR-Annotator.
 
 
-###NLR-Annotator
+### NLR-Annotator
 
 Usage
 
