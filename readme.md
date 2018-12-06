@@ -18,7 +18,7 @@ The NLR-Annotator pipeline consists of three steps:
 
 ### MEME suite version 4.9.1
 
-The MEME suite is available at http://meme.nbcr.net/meme/
+The MEME suite is available at [http://meme-suite.org/index.html](http://meme-suite.org/index.html)
 
 Please note that the most actual version of meme is not compatible with NLR Parser. Use meme 4.9.1.
 
