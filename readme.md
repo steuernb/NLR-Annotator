@@ -1,5 +1,9 @@
 # NLR-Annotator
 
+
+This branch has an updated version of NLR-Parser. Now this should be compatible with up-to-date meme-suite versions. However, this is not fully tested yet. It should work but please let me know if you find any issues.
+
+
 ## Introduction
 NLR-Annotator is a tool to annotate loci associated with NLRs in large sequences.
 It is searching for amino acid motifs within all 6 frames of a nucleotide sequence.
@@ -16,12 +20,9 @@ The NLR-Annotator pipeline consists of three steps:
 
 ## Requirements
 
-### MEME suite version 4.9.1
+### MEME suite
 
 The MEME suite is available at http://meme.nbcr.net/meme/
-
-Please note that the most actual version of meme is not compatible with NLR Parser. Use meme 4.9.1.
-
 Don't worry about setting up the Apache webserver. You just need MAST, so the quick install is sufficient.
 
 ### JRE 1.6
