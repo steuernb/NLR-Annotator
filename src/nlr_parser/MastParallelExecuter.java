@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -16,6 +17,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import support.BioSequence;
 import support.FastaReader;
@@ -65,7 +70,12 @@ public class MastParallelExecuter {
 		tempdir.mkdir();
 		
 		
-		InputStream inputStream = getClass().getResourceAsStream("meme.xml");
+		
+		System.out.println( "meme.xml not found. Trying to download from Github");
+		
+		URL url = new URL("https://github.com/steuernb/NLR-Parser/blob/master/meme.xml");
+		InputStream inputStream = url.openStream();
+		
 		BufferedWriter out = new BufferedWriter(new FileWriter(new File(tempdir, "meme.xml")));
 		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 		for(String inputline = in.readLine(); inputline != null; inputline = in.readLine()){
@@ -100,7 +110,7 @@ public class MastParallelExecuter {
 	
 	
 	
-	public Hashtable<String,MastMotifHitList> executeMastDNA(File sequenceFile, double pvalue_threshold)throws IOException, InterruptedException, ExecutionException{
+	public Hashtable<String,MastMotifHitList> executeMastDNA(File sequenceFile, double pvalue_threshold)throws IOException, InterruptedException, ExecutionException, SAXException, ParserConfigurationException{
 		ExecutorService executor = Executors.newFixedThreadPool(this.numThreads);
 		List<Future<File>> list = new ArrayList<Future<File>>();
 		
@@ -146,14 +156,14 @@ public class MastParallelExecuter {
 		for(Future<File> future : list){
 			File file = future.get();
 			MastFile mastFile = new MastFile(file, pvalue_threshold);
-			mastFile.mergeDNAEntries();
+			//mastFile.mergeDNAEntries();
 			Hashtable<String,MastMotifHitList> hh = mastFile.getNibblers();
 			//System.out.println("DEBUG: <MastParallelExecuter> num hits: "+hh.size());
 			for(Enumeration<String> myenum = hh.keys(); myenum.hasMoreElements();){
 				String key = myenum.nextElement();
 				MastMotifHitList  mmhl = hh.get(key);
 				
-				if(mmhl.isNibbler()){
+				if(mmhl.hasNlrSignature()){
 					//System.out.println("DEBUG <MastParallelExecuter>; motif list: " + mmhl.getMotifListString());
 					h.put(key, hh.get(key));
 				}
@@ -168,7 +178,7 @@ public class MastParallelExecuter {
 
 	
 	
-	public Hashtable<String,MastMotifHitList> executeMastProtein(File inputFile,  double pvalue_threshold)throws IOException, InterruptedException, ExecutionException{
+	public Hashtable<String,MastMotifHitList> executeMastProtein(File inputFile,  double pvalue_threshold)throws IOException, InterruptedException, ExecutionException, SAXException, ParserConfigurationException{
 		
 		
 		ExecutorService executor = Executors.newFixedThreadPool(this.numThreads);
@@ -211,14 +221,14 @@ public class MastParallelExecuter {
 		for(Future<File> future : list){
 			File file = future.get();
 			MastFile mastFile = new MastFile(file,  pvalue_threshold);
-			mastFile.prepareProteinEntries();
+			//mastFile.prepareProteinEntries();
 			Hashtable<String,MastMotifHitList> hh = mastFile.getNibblers();
 			
 			for(Enumeration<String> myenum = hh.keys(); myenum.hasMoreElements();){
 				String key = myenum.nextElement();
 				
 				MastMotifHitList  mmhl = hh.get(key);
-				if(mmhl.isNibbler()){
+				if(mmhl.hasNlrSignature()){
 					h.put(key, hh.get(key));
 				}
 				
@@ -237,7 +247,7 @@ public class MastParallelExecuter {
 	
 	
 	
-	public Hashtable<String,MastMotifHitList> executeMastDNAFastq(File sequenceFile, double pvalue_threshold)throws IOException, InterruptedException, ExecutionException{
+	public Hashtable<String,MastMotifHitList> executeMastDNAFastq(File sequenceFile, double pvalue_threshold)throws IOException, InterruptedException, ExecutionException, SAXException, ParserConfigurationException{
 		ExecutorService executor = Executors.newFixedThreadPool(this.numThreads);
 		List<Future<File>> list = new ArrayList<Future<File>>();
 		
@@ -296,12 +306,12 @@ public class MastParallelExecuter {
 		for(Future<File> future : list){
 			File file = future.get();
 			MastFile mastFile = new MastFile(file, pvalue_threshold);
-			mastFile.mergeDNAEntries();
+			//mastFile.mergeDNAEntries();
 			Hashtable<String,MastMotifHitList> hh = mastFile.getNibblers();
 			for(Enumeration<String> myenum = hh.keys(); myenum.hasMoreElements();){
 				String key = myenum.nextElement();
 				MastMotifHitList  mmhl = hh.get(key);
-				if(mmhl.isNibbler()){
+				if(mmhl.hasNlrSignature()){
 					h.put(key, hh.get(key));
 				}
 			}

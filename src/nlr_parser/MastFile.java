@@ -5,7 +5,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import support.BioSequence;
 import support.FastaReader;
@@ -15,7 +23,7 @@ public class MastFile {
 		
 	
 	File mastFile;
-	private Hashtable<String, MastEntry> entries;
+	
 	Hashtable<String, MastMotifHitList > nblrrs;
 	
 	double pvalue_threshold;
@@ -24,30 +32,171 @@ public class MastFile {
 	
 	
 	
-	public MastFile(File mastFile)throws IOException{
+	public MastFile(File mastFile)throws IOException, ParserConfigurationException, SAXException{
 		this.mastFile         = mastFile;
-		this.entries          = new Hashtable<String, MastEntry>();
+	
 		this.pvalue_threshold = 1e-5;      //default value
-		this.readEntries();
+		nblrrs = new Hashtable<String,MastMotifHitList>();
+		readEntries(pvalue_threshold);
+		
 	}
 	
-	public MastFile(File mastFile,  double pvalue_threshold)throws IOException{
+	public MastFile(File mastFile,  double pvalue_threshold)throws IOException, ParserConfigurationException, SAXException{
 		
 		this.pvalue_threshold = pvalue_threshold;
 		this.mastFile         = mastFile;
-		this.entries          = new Hashtable<String, MastEntry>();
-		this.readEntries();
+		
+		nblrrs = new Hashtable<String,MastMotifHitList>();
+		readEntries(pvalue_threshold);
+		
+		
+		
 	}
 	
-	private void readEntries()throws IOException{
-		MastXMLReader reader = new MastXMLReader(this.mastFile);
-		MastEntry entry = reader.readEntry();
-		while(entry != null){
-			entries.put(entry.getName(), entry);
-			entry = reader.readEntry();
+	private void readEntries(double pvalue)throws IOException, ParserConfigurationException, SAXException{
+		Hashtable<String, MastMotifHitList> mastMotifHitLists = this.parseXML();
+		
+		for(Enumeration<String> myenum = mastMotifHitLists.keys(); myenum.hasMoreElements();){
+			String key = myenum.nextElement();
+			MastMotifHitList list = mastMotifHitLists.get(key);
+			MastMotifHitList fw = new MastMotifHitList();
+			MastMotifHitList rv = new MastMotifHitList();
+			
+			for(Enumeration<MastMotifHit> myenum2 = list.getMotifs().elements(); myenum2.hasMoreElements();){
+				MastMotifHit hit = myenum2.nextElement();
+				if( hit.getPvalue() > pvalue){
+					continue;
+				}
+				if( hit.forwardStrand){
+					fw.addMotif(hit);
+				}else{
+					rv.addMotif(hit);
+				}
+				
+				if( fw.getSize()>0){
+					fw.sort();
+					nblrrs.put(key+"+", fw);
+				}
+				if( rv.getSize()>0){
+					rv.sort();
+					nblrrs.put(key+"-", rv);
+				}
+			}
+			
+			
 		}
-		reader.close();
+		
 	}
+	
+	
+	
+	/**
+	 * called by readEntries() and reads in the xml file produced by MAST. New versions 9.1 and 11.2 are supported.
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
+	 */
+	private Hashtable<String, MastMotifHitList> parseXML()throws IOException, SAXException, ParserConfigurationException{
+		
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document dom = db.parse(this.mastFile);
+		Hashtable<String,MastMotifHitList> motifLists = new Hashtable<String,MastMotifHitList>();
+		
+		Element rootElement = dom.getDocumentElement();
+		System.out.println(rootElement.getNodeName());
+		
+		NodeList nodeList = rootElement.getElementsByTagName("sequences");
+		for( int i = 0; i< nodeList.getLength(); i++){
+			Element elementSequences = (Element) nodeList.item(i);
+			
+			
+			NodeList nodeListSequences = elementSequences.getElementsByTagName("sequence");
+			for( int j = 0; j< nodeListSequences.getLength(); j++){
+				Element elementSequence = (Element)nodeListSequences.item(j);
+				String sequence_id = elementSequence.getAttribute("name");
+				int length = Integer.parseInt(elementSequence.getAttribute("length"));
+				
+				String sequenceName = sequence_id.split("_frame")[0];
+				MastMotifHitList list = new MastMotifHitList();
+				if(!motifLists.containsKey(sequenceName)){
+					motifLists.put(sequenceName, list);
+				}
+				
+				
+				char[] sequence = new char[length];
+				for( int index = 0; index< sequence.length; index++){
+					sequence[index]= '-';
+				}
+				
+				
+				
+				
+				NodeList nodeListSeg = elementSequence.getElementsByTagName("seg");
+				for( int k = 0; k< nodeListSeg.getLength(); k++){
+					Element elementSeg = (Element)nodeListSeg.item(k);
+					int start = Integer.parseInt(elementSeg.getAttribute("start"));
+					char[] s = elementSeg.getAttribute("data").toCharArray();
+					for(int index = 0; index < s.length; index ++){
+						sequence[start-1+index] = s[index];
+					}
+					
+					NodeList nodeListHit = elementSeg.getElementsByTagName("hit");
+					for( int l=0; l< nodeListHit.getLength(); l++){
+						Element elementHit = (Element)nodeListHit.item(l);
+						
+						int pos = Integer.parseInt(elementHit.getAttribute("pos"));
+						int motif = 0;
+						if( elementHit.hasAttribute("motif")){
+							motif = Integer.parseInt(elementHit.getAttribute("motif").split("_")[1]);
+						}
+						if( elementHit.hasAttribute("idx")){
+							motif = Integer.parseInt(elementHit.getAttribute("idx")) + 1;
+						}
+						
+						double pvalue = Double.parseDouble(elementHit.getAttribute("pvalue"));
+						String match = elementHit.getAttribute("match");
+						
+						boolean forwardStrand = true;
+						int frame = 0;
+								
+						try{
+							String string= sequence_id.split("_frame")[1];
+							if(string.substring(0, 1).equalsIgnoreCase("-")){
+								forwardStrand = false;
+							}
+							frame = Integer.parseInt(string.substring(1,2));
+						}catch(ArrayIndexOutOfBoundsException e){}
+						
+						MastMotifHit hit = new MastMotifHit(sequenceName, pos,  motif, pvalue, match, forwardStrand, frame);
+						motifLists.get(sequenceName).addMotif(hit);
+					}
+					
+					
+				}
+				
+				
+				
+				
+				
+				motifLists.get(sequenceName).addAASequence(sequence.toString());
+				
+				
+				
+			}
+			
+			
+			
+		}
+		
+		return motifLists;
+	}
+	
+	
+	
+
 	
 	
 	public void addAASequences(File sequenceFile)throws IOException{
@@ -88,157 +237,10 @@ public class MastFile {
 	}
 	
 	
-	/**
-	 *
-	 * 
-	 * @throws IOException
-	 */
-	public void mergeDNAEntries()throws IOException{
-		nblrrs = new Hashtable<String,MastMotifHitList>();
-		if(entries.size()==0){
-			this.readEntries();
-		}
-		
-		for(Enumeration<String> myenum = entries.keys(); myenum.hasMoreElements();){
-			String key = myenum.nextElement();
-			String name = key.split("_frame")[0];
-			String strand = key .split("_frame")[1].substring(0,1);
-			
-			Vector<MastMotifHit> v = entries.get(key).getHits();
-			MastMotifHitList list = new MastMotifHitList();
-			list.setSequenceLength(entries.get(key).getLength());
-			
-			if(nblrrs.containsKey(name+strand)){
-				list= nblrrs.get(name+strand);
-			}
-			for(Enumeration<MastMotifHit> myenum2 = v.elements(); myenum2.hasMoreElements();){
-				MastMotifHit mmh = myenum2.nextElement();
-				if(mmh.getPvalue()<=this.pvalue_threshold){
-					list.addMotif(mmh);
-				}
-			}
-			if(list.getSize()>0){
-				nblrrs.put(name+strand, list);
-			}
-			
-		}
-		
-	}
 	
 	
-		
-	public void prepareProteinEntries()throws IOException {
-		nblrrs = new Hashtable<String,MastMotifHitList>();
-		if(entries.size()==0){
-			this.readEntries();
-		}
-		
-		for(Enumeration<String> myenum = entries.keys(); myenum.hasMoreElements();){
-			String key = myenum.nextElement();
-			String name = key;
-			
-			
-			Vector<MastMotifHit> v = entries.get(key).getHits();
-			MastMotifHitList list = new MastMotifHitList();
-			list.setSequenceLength(entries.get(key).getLength());
-			
-			if(nblrrs.containsKey(name)){
-				list= nblrrs.get(name);
-			}
-			for(Enumeration<MastMotifHit> myenum2 = v.elements(); myenum2.hasMoreElements();){
-				MastMotifHit mmh = myenum2.nextElement();
-				if(mmh.getPvalue()<=this.pvalue_threshold){
-					list.addMotif(mmh);
-				}
-			}
-			if(list.getSize()>0){
-				nblrrs.put(name, list);
-			}
-			
-		}
-	}
 
 	
-	
-	
-	
-	
-	/*
-	
-	public void writeOutputGFF(File outputFile)throws IOException{
-		BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
-
-		out.write("##gff-version 2");
-		out.newLine();
-		out.write("##source-version MastParser " + NLRParser.getVersion());
-		out.newLine();
-		
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		Date date = new Date();
-		out.write("##date "+dateFormat.format(date)); 
-		out.newLine();
-		out.write("##Type DNA");
-		out.newLine();
-		out.write("#seqname\tsource\tfeature\tstart\tend\tscore\tstrand\tframe\tattribute");
-		out.newLine();
-		
-		
-		for(Enumeration<String> myenum1 = this.nblrrs.keys(); myenum1.hasMoreElements();){
-			String sequenceName = myenum1.nextElement();
-			MastMotifHitList list = this.nblrrs.get(sequenceName);
-		
-			for( Enumeration<MastMotifHit> myenum2 = list.getMotifs().elements(); myenum2.hasMoreElements();){
-				MastMotifHit hit = myenum2.nextElement();
-				out.write(sequenceName +"\tMastParser\tMastMotif\t"  );
-				
-				int frame = Integer.parseInt(hit.getSequence_name().split("_frame")[1].substring(1,2) );
-				
-				boolean isForwardStrand = true;
-				if(hit.getSequence_name().split("_frame")[1].substring(0, 1).equalsIgnoreCase("-")){
-					isForwardStrand= false;
-				}
-				int aa_start = hit.getPos();
-				int aa_end = hit.getPos() + hit.getMatch().length();
-				int nucl_start = -1;
-				int nucl_end = -1;
-				try{
-					nucl_start = MastFile.aminoAcidPositionToNucleotidePosition(aa_start, frame,isForwardStrand, list.getSequenceLength(), true);
-					nucl_end   = MastFile.aminoAcidPositionToNucleotidePosition(aa_end, frame,isForwardStrand, list.getSequenceLength(), false);
-					if( !isForwardStrand){
-						nucl_start = MastFile.aminoAcidPositionToNucleotidePosition(aa_end, frame,isForwardStrand, list.getSequenceLength(), false);
-						nucl_end   = MastFile.aminoAcidPositionToNucleotidePosition(aa_start, frame,isForwardStrand, list.getSequenceLength(), true);
-					}
-				}catch (OutOfFrameException e ){
-					System.out.println(hit.getSequence_name() +" does not encode a proper frame");
-				}
-				String strand = "+";
-				if(!isForwardStrand){
-					strand = "-";
-				}
-				
-				
-				out.write(nucl_start + "\t" + nucl_end + "\t" +  hit.getPvalue() + "\t" +strand +"\t" + (Math.abs(frame) ) + "\t" + "name "+hit.getMotif() );
-				out.newLine();
-				
-				
-				
-			}
-			
-		}	
-		
-		
-		
-		
-		
-		
-		
-		out.close();
-		
-		
-		
-		
-	}
-	*/
 	/**
 	 * 
 	 * translates an aminoacid position back to the corresponding nucleotide position. It can be defined if the output position should be the first or the last base of the triplet

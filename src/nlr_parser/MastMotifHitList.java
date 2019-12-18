@@ -110,6 +110,8 @@ public class MastMotifHitList {
 		return this.dnaSequence;
 	}
 	
+	
+	/*
 	public static MastMotifHitList mergeLists( MastMotifHitList list1 , MastMotifHitList list2){
 		MastMotifHitList list = new MastMotifHitList();
 		
@@ -125,12 +127,12 @@ public class MastMotifHitList {
 		
 		return list;
 	}
+	*/
 	
 	
 	
 	
-	
-	public  boolean isNibbler(){
+	public  boolean hasNlrSignature(){
 		
 		
 		if(!sorted){
@@ -140,6 +142,7 @@ public class MastMotifHitList {
 		
 		Vector<int[]> motivCombinations = new Vector<int[]>();
 		int[] b = {17, 16}; motivCombinations.add(b);
+		b = new int[2]; b[0] = 1; b[1] = 6;  motivCombinations.add(b);
 		b = new int[3]; b[0] = 1; b[1] = 6; b[2] = 4; motivCombinations.add(b);
 		b = new int[3]; b[0] = 6; b[1] = 4; b[2] = 5; motivCombinations.add(b);
 		b = new int[3]; b[0] = 4; b[1] = 5; b[2] = 10;motivCombinations.add(b);
@@ -151,6 +154,7 @@ public class MastMotifHitList {
 		b = new int[3]; b[0] = 8; b[1] = 7; b[2] = 9; motivCombinations.add(b);
 		b = new int[3]; b[0] = 7; b[1] = 9; b[2] = 11;motivCombinations.add(b);
 		b = new int[2]; b[0] = 9; b[1] = 11;  motivCombinations.add(b);
+		b = new int[2]; b[0] = 11; b[1] = 9;  motivCombinations.add(b);
 		b = new int[2]; b[0] = 18; b[1] = 15; motivCombinations.add(b);
 		b = new int[2]; b[0] = 15; b[1] = 13; motivCombinations.add(b);
 		b = new int[2]; b[0] = 13; b[1] = 1; motivCombinations.add(b);
@@ -162,7 +166,7 @@ public class MastMotifHitList {
 		
 		int[] a = new int[motivlist.size()];
 		for( int i = 0; i< a.length; i++){
-			a[i] = Integer.parseInt(motivlist.get(i).getMotif().split("_")[1]);
+			a[i] = motivlist.get(i).getMotif();
 		}
 		
 		
@@ -204,7 +208,7 @@ public class MastMotifHitList {
 		
 		int[] a = new int[motivlist.size()];
 		for( int i = 0; i< a.length; i++){
-			a[i] = Integer.parseInt(motivlist.get(i).getMotif().split("_")[1]);
+			a[i] = motivlist.get(i).getMotif();
 		}
 		
 		boolean hasNTerminal = false;
@@ -234,7 +238,7 @@ public class MastMotifHitList {
 		
 		int[] a = new int[motivlist.size()];
 		for( int i = 0; i< a.length; i++){
-			a[i] = Integer.parseInt(motivlist.get(i).getMotif().split("_")[1]);
+			a[i] = motivlist.get(i).getMotif();
 		}
 		return a;
 	}	
@@ -246,7 +250,7 @@ public class MastMotifHitList {
 		
 		int[] a = new int[motivlist.size()];
 		for( int i = 0; i< a.length; i++){
-			a[i] = Integer.parseInt(motivlist.get(i).getMotif().split("_")[1]);
+			a[i] = motivlist.get(i).getMotif();
 		}
 		
 		
@@ -371,7 +375,7 @@ public class MastMotifHitList {
 			if(this.aaSequence == null && this.dnaSequence == null){
 				return "N/A";
 			}
-			if(Integer.parseInt(hit.getMotif().split("_")[1]) == 1 ){
+			if(hit.getMotif() == 1 ){
 				if(this.aaSequence == null){
 					this.aaSequence = new BioSequence("", this.dnaSequence).translate2Protein()[hit.frame].getSequence();
 					
@@ -479,6 +483,52 @@ public class MastMotifHitList {
 		
 		
 	}
+	
+	
+	
+
+	public boolean hasNBARC(){
+		String s = "";
+		for(Enumeration<MastMotifHit> myenum= this.motivlist.elements(); myenum.hasMoreElements();){
+			s= s + "," + myenum.nextElement().getMotif();
+		}
+		
+		if(s.contains(",1,6,4")){return true;}
+		if(s.contains(",6,4,5")){return true;}
+		if(s.contains(",4,5,10")){return true;}
+		if(s.contains(",5,10,3")){return true;}
+		if(s.contains(",10,3,12")){return true;}
+		if(s.contains(",3,12,2")){return true;}
+		if(s.contains(",1,4,5")){return true;}
+		if(s.contains(",12,2,8")){return true;}
+		if(s.contains(",2,8,7")){return true;}
+		return false;
+		
+	}
+	
+	
+	public boolean hasLRR(){
+		String s = "";
+		for(Enumeration<MastMotifHit> myenum= this.motivlist.elements(); myenum.hasMoreElements();){
+			s= s + "," + myenum.nextElement().getMotif();
+		}
+		
+		if( s.contains("9") || s.contains("11")){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public static Hashtable<String, MastMotifHitList> importFromXML(File inputFile)throws IOException,ParserConfigurationException, SAXException {
 		Hashtable<String, MastMotifHitList> h = new Hashtable<String, MastMotifHitList>();

@@ -27,10 +27,9 @@ import support.FastqReader;
 public class NLRParser {
 	
 	
-	static final double VERSION = 2.3;
+	static final double VERSION = 3.1;
 	
 	Hashtable<String, MastMotifHitList> lists;
-	
 	
 	
 	
@@ -38,7 +37,7 @@ public class NLRParser {
 		this.lists = MastMotifHitList.importFromXML(xmlFile);
 	}
 	
-	public NLRParser(File inputFile, File mastExe, File memeXML, int numThreads, int numSequencesPerCall, double pvalue_threshold)throws ExecutionException, InterruptedException, IOException{
+	public NLRParser(File inputFile, File mastExe, File memeXML, int numThreads, int numSequencesPerCall, double pvalue_threshold)throws ExecutionException, InterruptedException, IOException, SAXException, ParserConfigurationException{
 		MastParallelExecuter mpe = new MastParallelExecuter(mastExe, memeXML, numThreads, numSequencesPerCall);
 		
 		if(isFasta(inputFile)){
@@ -46,6 +45,7 @@ public class NLRParser {
 				this.lists = mpe.executeMastDNA(inputFile, pvalue_threshold);
 			}else{
 				this.lists = mpe.executeMastProtein(inputFile, pvalue_threshold);
+				
 			}
 		}else{
 			if( isFastq(inputFile)){
@@ -57,7 +57,7 @@ public class NLRParser {
 	}
 	
 	
-	public NLRParser(File inputFile, File mastExe,  int numThreads, int numSequencesPerCall, double pvalue_threshold)throws ExecutionException, InterruptedException, IOException{
+	public NLRParser(File inputFile, File mastExe,  int numThreads, int numSequencesPerCall, double pvalue_threshold)throws ExecutionException, InterruptedException, IOException, SAXException, ParserConfigurationException{
 		MastParallelExecuter mpe = new MastParallelExecuter(mastExe,  numThreads, numSequencesPerCall);
 		
 		if(isFasta(inputFile)){
@@ -97,7 +97,8 @@ public class NLRParser {
 			
 			
 			
-		String helpString =		"-i <inputFasta>\t\t\tInput file in fasta format\n"+
+		String helpString =		"NLR-Parser version "+ VERSION + "\n"+
+								"-i <inputFasta>\t\t\tInput file in fasta format\n"+
 								"-x <meme.xml>\t\t\tLocation of the meme.xml\n"+
 								"-y <mast>\t\t\tLocation of the mast program\n"+
 								"-o <output.txt>\t\t\toutput file in tabular format\n"+
@@ -148,8 +149,21 @@ public class NLRParser {
 					memeXML = new File(cli.getArg("x"));
 					System.err.println("Using meme.xml from " + memeXML.getParent());
 				}else{
-					memeXML = new File("meme.xml");
-					System.err.println("Using meme.xml from " + memeXML.getParent());
+					memeXML = new File(inputFile.getParentFile(), "meme.xml");
+					System.err.println("-x parameter not given. Searching for meme.xml in same directory as "+ inputFile.getName());
+					
+					if( !memeXML.exists()){
+						System.err.println("meme.xml not found. Searching in home directory...");
+						String s = System.getProperty("user.home");
+						memeXML = new File(s, "meme.xml");
+						if(memeXML.exists()){
+							System.err.println("meme.xml found in "+ s);
+						}else{
+							System.err.println("meme.xml not found in " + s);
+						}
+					}
+					
+					
 				}
 				
 			
@@ -343,7 +357,7 @@ public class NLRParser {
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	public static Hashtable<String,MastMotifHitList> executeNLRParser(File inputFile, File mastExe,  int numThreads, int numberOfSeqeuncesPerMastCall, boolean isFastq, boolean isProtein, double pvalue  ) throws ExecutionException,InterruptedException,IOException{
+	public static Hashtable<String,MastMotifHitList> executeNLRParser(File inputFile, File mastExe,  int numThreads, int numberOfSeqeuncesPerMastCall, boolean isFastq, boolean isProtein, double pvalue  ) throws ExecutionException,InterruptedException,IOException, SAXException, ParserConfigurationException{
 		
 		
 		
@@ -373,7 +387,7 @@ public class NLRParser {
 	}
 	
 	
-	public static Hashtable<String,MastMotifHitList> executeNLRParser(File inputFile, File mastExe, File memeXml, int numThreads, int numberOfSeqeuncesPerMastCall, boolean isFastq, boolean isProtein, double pvalue  ) throws ExecutionException,InterruptedException,IOException{
+	public static Hashtable<String,MastMotifHitList> executeNLRParser(File inputFile, File mastExe, File memeXml, int numThreads, int numberOfSeqeuncesPerMastCall, boolean isFastq, boolean isProtein, double pvalue  ) throws ExecutionException,InterruptedException,IOException, SAXException, ParserConfigurationException{
 		
 		
 		
@@ -421,7 +435,11 @@ public class NLRParser {
 					}
 					
 				}else{
-					this.lists.get(seq.getIdentifier()).addAASequence(seq.getSequence());
+					if(this.lists.containsKey(seq.getIdentifier() + "+")) {
+						this.lists.get(seq.getIdentifier()+"+").addAASequence(seq.getSequence());
+					}
+					
+					
 						
 				}
 			}
@@ -524,7 +542,7 @@ public class NLRParser {
 			String key = myenum.nextElement();
 			MastMotifHitList list = this.lists.get(key);
 			
-			if( list.isNibbler()){
+			if( list.hasNlrSignature()){
 				
 				String sequenceName = key.substring(0, key.length()-1);	
 				String strand = "N/A";
@@ -584,7 +602,7 @@ public class NLRParser {
 			String key = myenum.nextElement();
 			MastMotifHitList list = this.lists.get(key);
 			//System.out.println(key);
-			if( list.isNibbler()){
+			if( list.hasNlrSignature()){
 				
 				String sequenceName = key.substring(0, key.length()-1);	
 			
@@ -710,22 +728,6 @@ public class NLRParser {
 		
 	}
 	
-	/*
-	 public void exportToBED(File outputFile)throws IOException{
-		BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
-		out.write("track name=\"NLR_Motifs\"");
-		out.newLine();
-		out.write("itemRgb=\"On\"");
-		out.newLine();
-		
-		for(Enumeration<String> myenum = this.motifLists.keys(); myenum.hasMoreElements();){
-			String key = myenum.nextElement();
-			NLR_MotifList list = this.motifLists.get(key);
-			out.write(list.getBED());
-		}
-		
-		out.close();
-	 */
 	
 	public void writeBED(File outputFile)throws IOException{
 		
@@ -812,5 +814,8 @@ public class NLRParser {
 		return new int[3];
 	}
 	
-
+	
+	
+	
+	
 }

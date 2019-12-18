@@ -545,9 +545,9 @@ public NLR_Annotator(File choppedNlrParserXML, int distanceWithinMotifCombinatio
 					if(frame == 1){frame =0;}
 					if(frame == 2){frame =1;}
 				}
-				NLR_Motif motif = new NLR_Motif(sequenceID, Integer.parseInt(hit.getMotif().split("_")[1]), nucl_start+offset,nucl_end+offset, hit.getPvalue(), forwardStrand, frame);
+				NLR_Motif motif = new NLR_Motif(sequenceID, hit.getMotif(), nucl_start+offset,nucl_end+offset, hit.getPvalue(), forwardStrand, frame);
 				
-				
+					System.out.println(sequenceID);
 				
 					motif.setSequence(sequence.substring(nucl_start, nucl_end)); 
 					if(motif.getStrand().equalsIgnoreCase("-")){
@@ -1869,8 +1869,20 @@ public NLR_Annotator(File choppedNlrParserXML, int distanceWithinMotifCombinatio
 	}
 	
 	
+	public static void main(String[] args) {
+		try {
+			File inputFile = new File("/Volumes/group-scratch/Matthew-Hartley/steuernb/Eucalyptus/nlr_annotation/Ccitriodorav2_intermediate.xml");
+			File genomeSequence = new File("/Volumes/group-scratch/Matthew-Hartley/steuernb/Eucalyptus/Ccitriodora.prelim.v2.1.annot/CCV_018_PMs_scaffs.idFix.fa");
+			File outputFile = new File("/Volumes/group-scratch/Matthew-Hartley/steuernb/Eucalyptus/pipeline/step1/cc.nlr.fasta");
+			NLR_Annotator annotator = new NLR_Annotator(inputFile, 500, 2500, 10000);
+			annotator.writeReportTxt(new File("/Volumes/group-scratch/Matthew-Hartley/steuernb/Eucalyptus/pipeline/step1/cc.nlr.txt"));
+			annotator.writeNLRLoci(genomeSequence, outputFile, 250, 250, 250, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
-	public static void main(String[] args){
+	public static void mainCLI(String[] args){
 		CLI cli = new CLI();
 		
 		
