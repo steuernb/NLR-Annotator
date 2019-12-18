@@ -3,6 +3,7 @@
 
 This branch has an updated version of NLR-Parser. Now this should be compatible with up-to-date meme-suite versions. However, this is not fully tested yet. It should work but please let me know if you find any issues.
 
+There is a sequence file for testing NLR-Parser: [Rgenes.CDS.fasta](https://github.com/steuernb/NLR-Annotator/blob/nlr_parser3/Rgenes.CDS.fasta). (Please note that these sequences are CDS of NLR genes. This is for testing NLR-Parser only!) 
 
 ## Introduction
 NLR-Annotator is a tool to annotate loci associated with NLRs in large sequences.
@@ -32,7 +33,11 @@ Make sure you have the Java Runtime Environments 1.6 or higher. Download from ht
 
 
 ## Installation
-Make sure MEME suite and JRE are installed. Download three jar files (ChopSequence.jar, NLR-Parser.jar and NLR-Annotator.jar) as well as the motif definition file (meme.xml) from the [release](https://github.com/steuernb/NLR-Annotator/releases). Done.
+Make sure MEME suite and JRE are installed. Download three jar files (ChopSequence.jar and NLR-Annotator.jar) as well as the motif definition file (meme.xml) from the [release](https://github.com/steuernb/NLR-Annotator/releases). 
+
+For testing, please use the version of NLR-Parser in this branch: [NLR-Parser3.jar](https://github.com/steuernb/NLR-Annotator/blob/nlr_parser3/NLR-Parser3.jar)
+
+
 
 
 ## Running NLR-Annotator pipeline
