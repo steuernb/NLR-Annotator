@@ -16,13 +16,14 @@ The NLR-Annotator pipeline consists of three steps:
 
 ## Requirements
 
-### MEME suite version 4.9.1
+### MEME suite 
 
 The MEME suite is available at [http://meme-suite.org/index.html](http://meme-suite.org/index.html)
 
-Please note that the most actual version of meme is not compatible with NLR Parser. Use meme 4.9.1.
-
 Don't worry about setting up the Apache webserver. You just need MAST, so the quick install is sufficient.
+
+NLR-Parser in the current release is not compatible with meme-suite versions above 4.9.1. If you want to use a newer version of meme-suite, please switch to the branch [nlr_parser3](https://github.com/steuernb/NLR-Annotator/tree/nlr_parser3).
+
 
 ### JRE 1.6
 
