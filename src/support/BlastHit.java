@@ -308,7 +308,7 @@ public class BlastHit implements Comparable<BlastHit> {
 		Hashtable<Integer, BlastHSP> h = new Hashtable<Integer, BlastHSP>();
 		int i = 1;
 		for(Enumeration<BlastHSP> myenum = hsps.elements(); myenum.hasMoreElements();){
-			h.put(new Integer(i), myenum.nextElement());
+			h.put(i, myenum.nextElement());
 			i++;
 		}
 		return h;
@@ -340,7 +340,7 @@ public class BlastHit implements Comparable<BlastHit> {
 		for(Enumeration<BlastHSP> myenum = hsps.elements(); myenum.hasMoreElements();){
 			BlastHSP hsp = myenum.nextElement();
 			if(hsp.getIdentityPercentage() >= minIdentityPercentage){
-				h.put(new Integer(i), myenum.nextElement());
+				h.put(i, myenum.nextElement());
 				i++;
 			}	
 		}
