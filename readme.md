@@ -81,7 +81,7 @@ java -jar NLR-Parser.jar -t <number of threads> -y <path/to/meme/bin/mast> -x <p
 Usage
 
 ```
-java -jar NLR-Annotator -i <nlr.xml> -o <output.nlr.txt>
+java -jar NLR-Annotator.jar -i <nlr.xml> -o <output.nlr.txt>
 ```
 
  parameter  | argument | description
