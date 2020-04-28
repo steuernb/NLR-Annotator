@@ -23,7 +23,8 @@ The NLR-Annotator pipeline consists of three steps:
 
 ### MEME suite
 
-The MEME suite is available at http://meme.nbcr.net/meme/
+The MEME suite is available at http://meme.nbcr.net/meme/.
+Please note that meme version 4.12 seems to be incombatible with our meme.xml motif definitions. Version 5.1 works.
 Don't worry about setting up the Apache webserver. You just need MAST, so the quick install is sufficient.
 
 ### JRE 1.6
