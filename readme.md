@@ -1,4 +1,7 @@
-# NLR-Annotator
+# NLR-Annotator version 2
+
+- Code rewritten
+- Integrated motif search tool. No dependency of MEME.
 
 ## Introduction
 NLR-Annotator is a tool to annotate loci associated with NLRs in large sequences.
