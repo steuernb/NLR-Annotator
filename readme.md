@@ -38,7 +38,7 @@ Make sure you have the Java Runtime Environments 1.8 or higher. Download from ht
 ## Installation
 JRE is installed. Download jar file from [here](https://github.com/steuernb/NLR-Annotator/blob/NLR-Annotator-2/NLR-Annotator-v2.0.jar) 
 
-You will need two config files, [mot.txt](https://github.com/steuernb/NLR-Annotator/blob/NLR-Annotator-2/mot.txt) and [store.txt](https://github.com/steuernb/NLR-Annotator/blob/NLR-Annotator-2/store.txt).
+You will need two config files, [mot.txt](https://github.com/steuernb/NLR-Annotator/blob/NLR-Annotator-2/src/mot.txt) and [store.txt](https://github.com/steuernb/NLR-Annotator/blob/NLR-Annotator-2/src/store.txt).
 
 
 ## Running NLR-Annotator
@@ -68,6 +68,8 @@ In case you get an out-of-memory exception, add more to the java virtual machine
 -n | 1000 | number of sequences per thread (default 1000)
 -x | mot.txt | motif file, contains internal config setting for motifs
 -y | store.txt | store file, contains internal config settings for motifs
+
+## Acknowledgements
 
 
 
