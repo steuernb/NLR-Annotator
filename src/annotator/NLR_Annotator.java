@@ -1922,11 +1922,11 @@ public class NLR_Annotator {
 	public static void main(String[] args) {
 		try {
 			
-			run711N16();
+			//run711N16();
 			//runTAIRchr1();
 			//runTAIRchr1_Import();
 			//runTAIRchr1_parallel();
-			//cli(args);
+			cli(args);
 			//runTestFastaOut();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2014,25 +2014,6 @@ public class NLR_Annotator {
 		annotator.writeReportTxt(new File("/Users/steuernb/Documents/projects/Annotator2/test_data/TAIR10_chr1.nlr_p.txt"));
 	}
 	
-	public static void runTestFastaOut()throws IOException{
-		File motFile = new File("/Users/steuernb/workspace/NLR-Annotator2/src/motifParser/mot.txt");
-		File storeFile = new File("/Users/steuernb/workspace/NLR-Annotator2/src/motifParser/store.txt");
-
-		File inputFastaFile = new File("/Users/steuernb/Documents/projects/test/kamil/2273_geneious_1_percent_5_reads.fasta");
-		
-		int fragmentLength = 20000;
-		int overlap = 5000;
-		int distanceWithinMotifCombination=500;
-		int distanceForElongating=2500;
-		int distanceBetweenMotifCombinations=10000;
-		
-		NLR_Annotator annotator = new NLR_Annotator(inputFastaFile, motFile, storeFile, fragmentLength, overlap, distanceWithinMotifCombination, distanceForElongating, distanceBetweenMotifCombinations);
-		annotator.exportMotifParserResult(new File("/Users/steuernb/Documents/projects/test/kamil/MotifParser.tsv"));
-		annotator.writeReportTxt(new File("/Users/steuernb/Documents/projects/test/kamil/out.nlr.txt"));
-		annotator.writeNlrBED( new File("/Users/steuernb/Documents/projects/test/kamil/out.nlr.bed"));
-		annotator.writeNLRLoci(inputFastaFile, new File("/Users/steuernb/Documents/projects/test/kamil/out.nlr.txt"), 500);
-		
-	}
 	
 	
 	
