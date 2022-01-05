@@ -1,4 +1,4 @@
-package support;
+package support.commandLineInterface;
 
 public class CLIParseException extends Exception {
 	static final long serialVersionUID = 42L;

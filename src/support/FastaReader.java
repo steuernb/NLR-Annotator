@@ -38,6 +38,9 @@ public class FastaReader implements BioSequenceReader {
 	}
 	
 	
+
+	
+
 	public BioSequence readEntry()throws IOException{
 		if (lastLine == null){
 			return null;

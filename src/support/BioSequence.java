@@ -1,5 +1,7 @@
 package support;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -126,11 +128,26 @@ public class BioSequence implements Comparable<BioSequence> {
 		}
 	}
 	
+	public void setQuality( int qualityDummy){
+		this.quality = new int[this.getLength()];
+		for( int i = 0; i< this.quality.length; i++){
+			this.quality[i] = qualityDummy;
+		}
+	}
+	
 	public int[] getQuality (){
 		return this.quality;
 	}
 	
-	
+	public double getAverageQuality() {
+		double d = 0;
+		for(int i = 0; i< this.quality.length; i++) {
+			d = d + this.quality[i];
+			
+			
+		}
+		return (d/this.quality.length);
+	}
 	
 	public String getQuality(int offset){
 		String s = "";
@@ -178,6 +195,58 @@ public class BioSequence implements Comparable<BioSequence> {
 		
 	}
 	
+	
+	public void writeFasta(BufferedWriter out)throws IOException{
+		
+		out.write(">" + identifier  );
+		
+		if(this.description != null) {
+			out.write(" " + this.description);
+		}
+		
+		out.newLine();
+		out.write(sequence.toString());
+		out.newLine();
+		
+	}
+	
+	
+	public void writeFasta(BufferedWriter out, int linelength)throws IOException{
+		
+		out.write(">" + identifier  );
+		
+		if(this.description != null) {
+			out.write(" " + this.description);
+		}
+		
+		out.newLine();
+		
+		StringBuffer buffer = new StringBuffer(sequence);
+		
+		int index = 0;
+		while( index + linelength < buffer.length()) {
+			out.write(buffer.substring(index, index+linelength));
+			out.newLine();
+			
+			index = index + linelength;
+		}
+		/*
+		while(buffer.length() > linelength) {
+			out.write(buffer.substring(0, linelength));
+			buffer.delete(0, linelength);
+			out.newLine();
+		}
+		*/
+		
+		if(index <buffer.length()) {
+			out.write(buffer.substring(index));
+			out.newLine();
+		}
+		
+		
+	}
+	
+	
 	public int getLength(){
 		return this.sequence.length();
 	}
@@ -193,8 +262,9 @@ public class BioSequence implements Comparable<BioSequence> {
 	 */
 	public String getFastqString(){
 		if(this.lengthIsSynchronized()){
-			return "@" + identifier + "\n" + sequence.toString() + "\n" + this.getQuality(33) + "\n";
+			return "@" + identifier + "\n" + sequence.toString() + "\n+\n" + this.getQuality(33) + "\n";
 		}else{
+			System.out.println(this.sequence.length() + "\t" + this.quality.length);
 			return null;
 		}
 	}
@@ -246,7 +316,30 @@ public class BioSequence implements Comparable<BioSequence> {
 	    }
 	
 	
-	
+	  /**
+		 * calculates the number of bases in the sequence that are not an a,t,g or c. method is case insensitive.
+		 * 
+		 * @return
+		 * 	number of non standard bases.
+		 */
+		  public int getNumberOfNonStandardBases(boolean allowN){
+			  if(!allowN) {
+				  return getNumberOfNonStandardBases();
+			  }else {
+				  int numNonStandardBases=0;
+			    	Pattern p = Pattern.compile("[^ATGCNatgcn]+");
+			    	Matcher m = p.matcher(this.getSequence());
+			    	
+			    	while(m.find()){
+			    		numNonStandardBases = numNonStandardBases + m.group(0).length();
+			    	}
+			    	
+			    	return numNonStandardBases;  
+			  }
+			  
+		    }
+		
+		
 	
 	
 	 /**
@@ -353,19 +446,21 @@ public class BioSequence implements Comparable<BioSequence> {
     }
 
     
-    public char translateTriplet(String s)throws StringIndexOutOfBoundsException{
+    public static char translateTriplet(String s)throws StringIndexOutOfBoundsException{
+    	
+    	BioSequence seq = new BioSequence("","");
     	
     	char aa = 'X';
     	if(s.length()!= 3){
     		throw new StringIndexOutOfBoundsException ("Length of the inputString has to be 3. Otherwise it is not a triplet and cannot be translated.");
     	}
     	
-    	if(this.geneticCode == null){
-    		this.loadGeneticCodeTable();
+    	if(seq.geneticCode == null){
+    		seq.loadGeneticCodeTable();
     	}
     	s = s.toUpperCase();
-    	if( this.geneticCode.containsKey(s)){
-    		return this.geneticCode.get(s).charAt(0);
+    	if( seq.geneticCode.containsKey(s)){
+    		return seq.geneticCode.get(s).charAt(0);
     	}
     	
     	
@@ -505,10 +600,80 @@ public class BioSequence implements Comparable<BioSequence> {
     	
     }
 
+    
+    
+    public static char getIUPAC(char c1, char c2){
+    	char c = '-';
+    	
+    	if( c1 == 'A' || c1 =='a'){
+    		if( c2 == 'C' || c2 == 'c'){c='M';}
+    		if( c2 == 'T' || c2 == 't'){c='W';}
+    		if( c2 == 'G' || c2 == 'g'){c='R';}
+    	}
+    	
+    	if( c1 == 'T' || c1 =='t'){
+    		if( c2 == 'C' || c2 == 'c'){c='Y';}
+    		if( c2 == 'A' || c2 == 'a'){c='W';}
+    		if( c2 == 'G' || c2 == 'g'){c='K';}
+    	}
+    	
+    	if( c1 == 'G' || c1 =='g'){
+    		if( c2 == 'C' || c2 == 'c'){c='S';}
+    		if( c2 == 'T' || c2 == 't'){c='K';}
+    		if( c2 == 'A' || c2 == 'a'){c='R';}
+    	}
+    	
+    	if( c1 == 'C' || c1 =='c'){
+    		if( c2 == 'A' || c2 == 'a'){c='M';}
+    		if( c2 == 'T' || c2 == 't'){c='Y';}
+    		if( c2 == 'G' || c2 == 'g'){c='S';}
+    	}
+    	
+    	
+    	
+    	
+    	return c;
+    }
+    
+    
+    /**
+     * change the base at a certain position. This method assumes the first base is at position 1!
+     * 
+     * @param position
+     * @param character
+     */
+    public void changeBase(int position, String character){
+    	if( character.length() ==1){
+    		sequence.setCharAt(position-1, character.charAt(0));
+    	}else{
+    		System.err.println("did not change base at position "+ position+". Length of input String should be 1.");
+    	}
+    }
+    
     public String toString(){
     	return this.getFastaString();
     }
     
-    
+    public void trimSequence(int numberOf5PrimeBasesToClip, int numberOf3PrimeBasesToClip){
+    	if( numberOf5PrimeBasesToClip + numberOf3PrimeBasesToClip > sequence.length()){
+    		this.sequence = new StringBuilder("");
+    		this.quality = new int[0];
+    	}else{
+    		this.sequence = new StringBuilder(this.sequence.substring(numberOf5PrimeBasesToClip, this.sequence.length()-numberOf3PrimeBasesToClip));
+    		if(this.quality != null){
+    			int[] qual = new int[this.quality.length-numberOf5PrimeBasesToClip-numberOf3PrimeBasesToClip];
+        		
+        		for( int i = 0; i< qual.length; i++){
+        			qual[i] = this.quality[i+numberOf5PrimeBasesToClip];
+        		}
+        		this.quality = qual;
+    		}
+    		
+    	}
+    	
+    	
+    	
+    	
+    }
   
 }

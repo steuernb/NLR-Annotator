@@ -1,4 +1,4 @@
-package support;
+package support.commandLineInterface;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
