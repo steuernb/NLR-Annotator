@@ -20,7 +20,11 @@
 ## Introduction
 NLR-Annotator is a tool to annotate loci associated with NLRs in large sequences.
 It is searching for amino acid motifs within all 6 frames of a nucleotide sequence.
-An NLR locus is defined from first to last motif that can be associated with an NLR. It does NOT predict genes. A predicted NLR locus might be a pseudogene. if it is overlapping with a gene, the actual gene start or intron-exon boundaries are not given. It just points you to the loci that might be worth investigating, which we hope you will find useful.
+An NLR locus is defined from first to last motif that can be associated with an NLR. 
+
+It does NOT predict genes. A predicted NLR locus might be a pseudogene. 
+If it is overlapping with a gene, the actual gene start or intron-exon boundaries are not given. 
+It just points you to the loci that might be worth investigating, which we hope you will find useful.
 Details are published in [Steuernagel et al.: The NLR-Annotator tool enables annotation of the intracellular immune receptor repertoire, Plant Physiology, 2020](https://www.ncbi.nlm.nih.gov/pubmed/32184345)
 
 
