@@ -71,5 +71,5 @@ In case you get an out-of-memory exception, add more to the java virtual machine
 
 ## Acknowledgements
 
-
+Thanks to Jitender Cheema (JIC) for major code contribution to the Motif Search Engine!
 
