@@ -9,10 +9,26 @@ import java.util.regex.Pattern;
 
 
 /**
- * The basic represenation of a sequence. This can be DNA or amino acid. Additionally to the sequence itself the per-base quality can also be stored. 
- * 
- * @author steuernb
+ *   
+ *   The basic represenation of a sequence. This can be DNA or amino acid. Additionally to the sequence itself the per-base quality can also be stored.
+ *   
+ *   Copyright (C) 2021  John Innes Centre
  *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * 
+ *  @author Burkhard Steuernagel
+ * 
  */
 public class BioSequence implements Comparable<BioSequence> {
 

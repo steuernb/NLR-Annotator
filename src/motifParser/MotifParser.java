@@ -4,13 +4,35 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import core.Motif;
 import core.MotifList;
 import core.SignatureDefinition;
 import support.BioSequence;
 
+/**
+ *   NLR-Annotator - find signatures of NLR-type resistance genes in genomic sequence
+ *   
+ *   Copyright (C) 2021  John Innes Centre
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * 
+ * 
+ *  @author Jitender Cheema
+ *  @author Burkhard Steuernagel
+ * 
+ */
 public class MotifParser {
 
 	private int k;
@@ -27,61 +49,7 @@ public class MotifParser {
 	    this.aminoAcidSequence = aminoAcidSequence;
 	}
 	
-	public static void main(String[] args) {
-		
-		
-		
-		try {
-			
-			
-			SignatureDefinition def = new SignatureDefinition();
-			def.loadDefaultSignature();
-			
-			MotifDefinition motifDefinition = new MotifDefinition(
-							new File("/Users/steuernb/workspace/NLR-Annotator2/src/motifsearch/mot.txt"),
-							new File("/Users/steuernb/workspace/NLR-Annotator2/src/motifsearch/store.txt")
-					
-							);
-			
-			
-			
-			
-			File fastaFile = new File( "/Users/steuernb/Documents/projects/Annotator2/test_data/TAIR10_pep_20110103_representative_gene_model_updated");
-			
-			
-			int numberOfThreads = 2;
-			int numSequencesPerCall = 1000;
-			
-			/*
-			for(Iterator<String > iterator = mp.getMotifDefinition().getMotifNames().iterator(); iterator.hasNext();) {
-				System.out.println(iterator.next());
-			}
-			
-			
-			FastaReader fastaReader = new FastaReader(fastaFile);
-			for (BioSequence seq = fastaReader.readEntry(); seq != null; seq = fastaReader.readEntry()) {
-				
-				MotifList list = mp.findMotifs(seq, min_sequence_length);
-				
-				if(list != null && list.has_NLR_signature(def)) {
-					System.out.println(list.getMotifListName() +"\t" + list.getMotifString());
-				}
-				
-			}
-			fastaReader.close();
-			*/
-			
-			
-			
-			
-			
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	
-	}
 
 	
 	public MotifList findMotifs( ) throws IOException{

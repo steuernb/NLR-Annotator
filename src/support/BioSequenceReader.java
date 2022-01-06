@@ -2,6 +2,13 @@ package support;
 
 import java.io.IOException;
 
+
+/**
+ * 
+ * 
+ * @author Burkhard Steuernagel
+ *
+ */
 public  interface BioSequenceReader {
 
 	
