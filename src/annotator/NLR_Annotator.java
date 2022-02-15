@@ -1068,11 +1068,12 @@ public class NLR_Annotator {
 				
 				start = start + 1; //GFF is 1-based!
 				
+				String domains = this.annotatorSignatureDefinition.getDomainString(list);
 				
 				if( !list.getMotifs().get(0).isForwardStrand()){
 					strand = "-";
 				}
-				out.write(start + "\t" + end + "\t.\t"+strand+"\t.\tname="+ list.getMotifListName());
+				out.write(start + "\t" + end + "\t.\t"+strand+"\t.\tname="+ list.getMotifListName()+";nlrClass="+domains);
 				out.newLine();
 			}
 			
