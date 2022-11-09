@@ -130,6 +130,9 @@ public class NLR_Annotator {
 		
 	}
 	
+	/**
+	@deprecated
+	*/
 	public NLR_Annotator(File inputFasta, 
 						File motFile, 
 						File storeFile, 
@@ -1775,7 +1778,7 @@ public class NLR_Annotator {
 	
 
 	
-	public static void cli(String[] args){
+		public static void cli(String[] args)throws ExecutionException, InterruptedException{
 		CLI cli = new CLI();
 		
 		
@@ -1851,48 +1854,28 @@ public class NLR_Annotator {
 				
 				File inputFastaFile = new File(cli.getArg("i"));
 				
+				int numThreads = 1;
+				int numSequencesPerThread = 1000;
+				
 				if( cli.hasOption("t")) {
 					
-					int numSequencesPerThread = 1000;
+				
 					if(cli.hasOption("n")) {
 						numSequencesPerThread = Integer.parseInt(cli.getArg("n"));
 					}
 					
-					int numThreads = Integer.parseInt(cli.getArg("t"));
+					 numThreads = Integer.parseInt(cli.getArg("t"));
 				
-					try {
-						annotator = new NLR_Annotator(inputFastaFile,  motFile,  storeFile,  fragmentLength,  overlap,  numSequencesPerThread,  numThreads, distanceWithinMotifCombination, distanceForElongating, distanceBetweenMotifCombinations);
-						
-					}catch(ExecutionException e) {
-						System.out.println("multithreading failed:");
-						e.printStackTrace();
-						annotator= new NLR_Annotator(inputFastaFile, motFile, storeFile, fragmentLength, overlap, distanceWithinMotifCombination, distanceForElongating, distanceBetweenMotifCombinations);
-						
-					}
-					catch(InterruptedException e) {
-						System.out.println("multithreading failed:");
-						e.printStackTrace();
-						annotator= new NLR_Annotator(inputFastaFile, motFile, storeFile, fragmentLength, overlap, distanceWithinMotifCombination, distanceForElongating, distanceBetweenMotifCombinations);
-						
-					}
-				}else {
 					
-					annotator= new NLR_Annotator(inputFastaFile, motFile, storeFile, fragmentLength, overlap, distanceWithinMotifCombination, distanceForElongating, distanceBetweenMotifCombinations);
 				}
 				
+					annotator = new NLR_Annotator(inputFastaFile,  motFile,  storeFile,  fragmentLength,  overlap,  numSequencesPerThread,  numThreads, distanceWithinMotifCombination, distanceForElongating, distanceBetweenMotifCombinations);
 				
 				
 			}
 			
 			
-			
-			
-			
-			
-			
-			
-				
-			
+		
 			
 			
 			if( cli.hasOption("c")){
@@ -1941,7 +1924,7 @@ public class NLR_Annotator {
 		
 		
 	}
-	
+
 	
 	
 	public static void main(String[] args) {
