@@ -1,10 +1,8 @@
 package support.commandLineInterface;
 
-
-
 /**
  *   CLI -  a light weight cmd line interface
- *   
+ *
  *   Copyright (C) 2021  John Innes Centre
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -19,28 +17,26 @@ package support.commandLineInterface;
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * 
+ *
  *  @author Burkhard Steuernagel
- * 
+ *
  */
 public class CLIParseException extends Exception {
-	static final long serialVersionUID = 42L;
-	
-	public CLIParseException(){
-		super();
-		
-	}
+  static final long serialVersionUID = 42L;
 
-    public CLIParseException (String message) {
-        super (message);
-        
-    }
+  public CLIParseException() {
+    super();
+  }
 
-    public CLIParseException (Throwable cause) {
-        super (cause);
-    }
+  public CLIParseException(String message) {
+    super(message);
+  }
 
-    public CLIParseException (String message, Throwable cause) {
-        super (message, cause);
-    }
+  public CLIParseException(Throwable cause) {
+    super(cause);
+  }
+
+  public CLIParseException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

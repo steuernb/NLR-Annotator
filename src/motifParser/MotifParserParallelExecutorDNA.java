@@ -1,5 +1,8 @@
 package motifParser;
 
+import annotator.SequenceChopper;
+import core.MotifList;
+import core.SignatureDefinition;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,17 +14,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import annotator.SequenceChopper;
-import core.MotifList;
-import core.SignatureDefinition;
 import support.BioSequence;
-
-
 
 /**
  *   NLR-Annotator - find signatures of NLR-type resistance genes in genomic sequence
- *   
+ *
  *   Copyright (C) 2021  John Innes Centre
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -36,46 +33,39 @@ import support.BioSequence;
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * 
+ *
  *  @author Burkhard Steuernagel
- * 
+ *
  */
 public class MotifParserParallelExecutorDNA {
+  int numThreads;
+  int numSequencesPerCall;
 
-	
-	int numThreads;
-	int numSequencesPerCall;
-	
-	int fragmentLength;
-	int overlap;
-	
-	MotifDefinition motifDefinition;
-	SignatureDefinition signatureDefinition;
-	File inputFastaFile;
-	
-	
-	public MotifParserParallelExecutorDNA(MotifDefinition motifDefinition,
-									   SignatureDefinition signatureDefinition, 
-									   File inputFastaFile, 
-									   int numThreads, 
-									   int numSequencesPerCall,
-									   int fragmentLength,
-									   int overlap
-									   ) {
-		
-		this.numSequencesPerCall = numSequencesPerCall;
-		this.numThreads = numThreads;
-		this.motifDefinition = motifDefinition;
-		this.signatureDefinition = signatureDefinition;
-		this.inputFastaFile = inputFastaFile;
-		this.fragmentLength = fragmentLength;
-		this.overlap = overlap;
-		
-	}
-	
-	
+  int fragmentLength;
+  int overlap;
 
-/*
+  MotifDefinition motifDefinition;
+  SignatureDefinition signatureDefinition;
+  File inputFastaFile;
+
+  public MotifParserParallelExecutorDNA(
+    MotifDefinition motifDefinition,
+    SignatureDefinition signatureDefinition,
+    File inputFastaFile,
+    int numThreads,
+    int numSequencesPerCall,
+    int fragmentLength,
+    int overlap
+  ) {
+    this.numSequencesPerCall = numSequencesPerCall;
+    this.numThreads = numThreads;
+    this.motifDefinition = motifDefinition;
+    this.signatureDefinition = signatureDefinition;
+    this.inputFastaFile = inputFastaFile;
+    this.fragmentLength = fragmentLength;
+    this.overlap = overlap;
+  }
+  /*
 
 	public Vector< MotifList> execute( ) throws IOException, ExecutionException, InterruptedException{
 		
@@ -167,6 +157,5 @@ public class MotifParserParallelExecutorDNA {
 	
 	
 	*/
-	
-	
+
 }
